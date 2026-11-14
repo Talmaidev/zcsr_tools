@@ -1,0 +1,7 @@
+build_arch/
+build/
+out/
+*.obj
+*.lib
+*.pdb
+*.ilk
