@@ -8,8 +8,8 @@ if(MSVC)
 endif()
 
 # Tools are a separate repo; point these at the real repos.
-# Defaults use the stable merged engine main and the sibling runtime/UIM repos.
-set(ZCSR_ENGINE_DIR "C:/Users/chen/Documents/GitHub/_worktrees/zcsr-main" CACHE PATH "zcsr engine repo (merged main)")
+# Defaults use the engine repo root and the sibling runtime/UIM repos.
+set(ZCSR_ENGINE_DIR "C:/Users/chen/Documents/GitHub/zero-coupling-signal-router" CACHE PATH "zcsr engine repo")
 set(ZCSR_RUNTIME_DIR "C:/Users/chen/Documents/GitHub/zcsr_runtime" CACHE PATH "zcsr runtime repo")
 set(ZCSR_UIM_DIR "C:/Users/chen/Documents/GitHub/UIM" CACHE PATH "UIM repo")
 set(ZCSR_ENGINE_INCLUDE "${ZCSR_ENGINE_DIR}/include" CACHE PATH "Path to zero-coupling-signal-router/include")
