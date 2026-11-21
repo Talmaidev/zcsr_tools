@@ -8,6 +8,8 @@
  * The four Geometry Proof occlusion cases are checked host-side at init. */
 #include "zcsr_runtime_shell.h"
 #include "zcsr/gl_render.h"
+#include "zcsr/input.h"
+#include "light_key_contract.h"
 #include "zcsr/gl_render_l2d_geo.h"
 #include "zcsr/light2d.h"
 #include "zcsr/light2d_floor.h"
@@ -70,8 +72,6 @@ typedef struct {
 
 static unsigned char light2d_buf[64 * 1024];
 static light_state g_light;
-
-#define LIGHT_KEY_SPACE 0x20
 
 /* ---- host-side mirror of the shader slab test (proof cross-check) ------- */
 static int seg_blocked(float lx, float ly, float lz,
@@ -779,33 +779,30 @@ static void light_module_frame(zcsr_gl_renderer* r, int cw, int ch, void* user)
 static bool light_module_key(int key, void* user)
 {
     light_state* s = (light_state*)user;
+    zcsr_light_key_action action;
     if (s->ctx == NULL) return false;
     if (s->autoquit) return false; /* autoquit: no interactive key handling */
-    if (key == LIGHT_KEY_SPACE) {
-        zcsr_light_quality next = (s->quality == (int)ZCSR_LIGHT_QUALITY_LOW)
-            ? ZCSR_LIGHT_QUALITY_HIGH : ZCSR_LIGHT_QUALITY_LOW;
-        if (zcsr_light2d_set_quality(s->ctx, next)) {
-            s->quality = (int)next;
+    action = zcsr_light_key_classify(key);
+    switch (action) {
+    case ZCSR_LIGHT_KEY_QUALITY: {
+        int next_quality = s->quality;
+        zcsr_light_key_apply(action, &next_quality, &s->light_z);
+        if (zcsr_light2d_set_quality(s->ctx, (zcsr_light_quality)next_quality)) {
+            s->quality = next_quality;
             printf("[light] quality -> %s\n",
                    s->quality == (int)ZCSR_LIGHT_QUALITY_LOW ? "LOW" : "HIGH");
         }
         return true;
     }
-    if (key == 'W' || key == 'w') {
-        s->light_z += 0.25f;
-        if (s->light_z > 8.0f) s->light_z = 8.0f;
+    case ZCSR_LIGHT_KEY_Z_UP:
+    case ZCSR_LIGHT_KEY_Z_DOWN:
+        zcsr_light_key_apply(action, &s->quality, &s->light_z);
         printf("[light] light z -> %.2f (tip x=%.1f)\n", s->light_z,
                3.0f * BOX_MAX_X / s->light_z);
         return true;
+    default:
+        return false;
     }
-    if (key == 'S' || key == 's') {
-        s->light_z -= 0.25f;
-        if (s->light_z < 0.5f) s->light_z = 0.5f;
-        printf("[light] light z -> %.2f (tip x=%.1f)\n", s->light_z,
-               3.0f * BOX_MAX_X / s->light_z);
-        return true;
-    }
-    return false;
 }
 
 /* 导出的 light2d 演示模块 */
