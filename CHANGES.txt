@@ -1,0 +1,13 @@
+ZCSR Tools change notes
+2026-11-21
+
+history
+- keep one author line
+- keep source and technical docs
+- no release tag for now
+
+scope
+- common
+- tower_defense
+- overlay
+- tests
