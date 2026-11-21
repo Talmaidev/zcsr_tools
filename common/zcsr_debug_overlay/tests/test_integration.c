@@ -1,4 +1,4 @@
-/* Integration test — end-to-end integration test: overlay click -> signal router -> HSM -> state buffer.
+/* end-to-end integration test: overlay click -> signal router -> HSM -> state buffer.
  * Runs headless: on_pointer is pure hit-test (no display needed); only render() needs a surface. */
 #include "zcsr/state_buffer.h"
 #include "overlay.h"

@@ -1,4 +1,4 @@
-/* Overlay backend — Cocoa (macOS) overlay draw backend. Objective-C, compiled only on Apple.
+/* Cocoa (macOS) overlay draw backend. Objective-C, compiled only on Apple.
  * Implements the C-ABI shim in overlay_cocoa.h. Includes only the same-module shim header
  * (which pulls in the zcsr/overlay.h contract) and the system Cocoa framework.
  *
