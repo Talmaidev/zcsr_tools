@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 3.16)
 add_library(zcsr_game_two_dimensional STATIC
     src/game_two_dimensional.c)
 target_include_directories(zcsr_game_two_dimensional PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 add_executable(game_two_dimensional_tests
     tests/test_game_two_dimensional.c)

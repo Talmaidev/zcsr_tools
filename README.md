@@ -1,19 +1,43 @@
-# zcsr_tools 分层
+# zcsr_tools
 
-`zcsr_tools` 只允许两个独立功能层，新游戏按需组合，不允许复制整套工具，也不强迫所有公共能力经过某一层转发。
+`zcsr_tools` is a **developer tool layer**, not a product entry and not a
+window host. It contains reusable tool code and one domain pack. The runtime
+host owns the OS window and main loop; the editor workspace owns authoring UI.
+
+This README uses these words with exactly one meaning:
+
+- **tool layer**: reusable non-product code that a game or editor may link.
+- **domain pack**: code for one game family, for example tower defense.
+- **2.5D workspace reference**: a fixed demonstration of floor, wall and box
+  geometry. It is not a general scene authoring system.
+- **scene authoring**: the future document, command and serialization layer for
+  a 2.5D scene. It is not present in this repository yet.
 
 ## common/
 
-通用必备功能，任何 2D 或非 2D 游戏都可以直接复用。
+Reusable tool code. A game links only the targets it uses; a tool target does
+not force another tool target.
 
-- `zcsr_game_two_dimensional`：通用 2D 点、格子、棋盘坐标、调用方存储的占用视图。
-- `zcsr_bench`：CPU/GPU/自定义序列采样与 p50/p95/p99 报表。
-- `zcsr_profiler`：固定窗口 FPS、计数器、p95 HUD。
-- `zcsr_debug_overlay`：独立原生调试窗口。
-- `zcsr_debug_draw`：调试图元命令缓冲。
-- `zcsr_workspace_2d5`：2.5D 灯光工作区参考实现。
+- `zcsr_game_two_dimensional`: 2D point, grid, board coordinate and caller-owned
+  occupancy view.
+- `zcsr_pathfinding`: graph A*/Dijkstra path solving with caller-owned workspace
+  and output buffers.
+- `zcsr_flow_field`: uniform-cost grid integration/flow field with caller-owned
+  cost, distance, queue and direction storage.
+- `zcsr_spatial_grid`: uniform-grid broadphase for caller-owned AABBs, with
+  point and AABB candidate queries; it does not decide collisions or targets.
+- `zcsr_bench`: CPU/GPU/custom sample series and p50/p95/p99 report.
+- `zcsr_profiler`: fixed-window FPS, counters and p95 HUD.
+- `zcsr_debug_overlay`: developer-only standalone debug view. It is not loaded
+  into the product runtime and never becomes a second product window.
+- `zcsr_debug_draw`: debug primitive command buffer.
+- `zcsr_workspace_2d5`: fixed 2.5D light workspace reference. It is not scene
+  authoring and it is not linked by the editor today. It is built and tested in
+  this repository but is not exported by the `zcsr_tools` install package because
+  its demo shell consumes the runtime host.
 
-约束：不出现 `tower_defense`、`pvz`、`plant`、`zombie`、`sun` 等大类或实例语义；不依赖 `tower_defense`。
+Constraint: no `tower_defense`, `pvz`, `plant`, `zombie`, `sun` or other domain
+instance names in `common/`; no dependency on `tower_defense/`.
 
 ## tower_defense/
 
@@ -29,4 +53,4 @@
 - 新非塔防游戏：只链接需要的 `common` 工具，不引入塔防层。
 - PVZ：`pvz_input_map` 和 `pvz_sim` 直接调用 `zcsr_game_two_dimensional` 的网格坐标、占用、格子中心；lane 限制调用 `zcsr_tower_defense_lane_clamp`，波次调用 `zcsr_tower_defense_wave_schedule`。PVZ 不再保留自己的格子除法、占用检查、lane clamp 或 `next_wave < wave_count` 循环。
 
-`tests/check_layer_boundary.cmake` 会在 CTest 中检查目录边界，防止后续把实例逻辑塞回通用层；当前 tools CTest 9/9。`zcsr_bench` 只负责采样和 p50/p95/p99 报表，不是发布性能结论；跨引擎对比必须使用同一热机、同分辨率、同资产的单一控制变量表。
+`tests/check_layer_boundary.cmake` 会在 CTest 中检查目录边界，防止后续把实例逻辑塞回通用层；当前 tools CTest 11/11。`zcsr_bench` 只负责采样和 p50/p95/p99 报表，不是发布性能结论；跨引擎对比必须使用同一热机、同分辨率、同资产的单一控制变量表。

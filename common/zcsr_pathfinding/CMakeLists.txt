@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 3.16)
 add_library(zcsr_pathfinding STATIC
     src/pathfinding.c)
 target_include_directories(zcsr_pathfinding PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 add_executable(pathfinding_tests
     tests/test_pathfinding.c)

@@ -7,3 +7,5 @@ out/
 *.lib
 *.pdb
 *.ilk
+__pycache__/
+*.pyc

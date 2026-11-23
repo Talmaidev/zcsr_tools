@@ -1,8 +1,10 @@
 #ifndef ZCSR_WORKSPACE_2D5_H
 #define ZCSR_WORKSPACE_2D5_H
-/* zcsr_tools / zcsr_workspace_2d5 — public control surface for the 2.5D light workspace demo.
- * The demo frame itself is driven by zcsr_runtime_shell; these entry points only set scene,
- * render options, and camera FOV/pitch. No game-specific types. */
+/* zcsr_tools / zcsr_workspace_2d5 — public control surface for the fixed 2.5D
+ * light workspace demonstration. This is not a general scene authoring API.
+ * It sets a fixed floor/wall/box demonstration, render options and camera
+ * pitch. The demo frame is driven by zcsr_runtime_shell; these entry points do
+ * not own a window, a scene document, entities, layers or commands. */
 #include <stdbool.h>
 
 #ifdef __cplusplus

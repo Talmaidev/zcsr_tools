@@ -6,7 +6,8 @@ add_library(zcsr_workspace_2d5 STATIC
     src/light_key_contract.c)
 
 target_include_directories(zcsr_workspace_2d5 PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_include_directories(zcsr_workspace_2d5 PRIVATE
     ${ZCSR_ENGINE_INCLUDE}
     ${ZCSR_RUNTIME_INCLUDE}

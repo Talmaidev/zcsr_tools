@@ -1,0 +1,7 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+find_dependency(zcsr CONFIG)
+
+include("${CMAKE_CURRENT_LIST_DIR}/zcsr_toolsTargets.cmake")
+check_required_components(zcsr_tools)
