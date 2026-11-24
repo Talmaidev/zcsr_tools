@@ -35,6 +35,11 @@ not force another tool target.
   authoring and it is not linked by the editor today. It is built and tested in
   this repository but is not exported by the `zcsr_tools` install package because
   its demo shell consumes the runtime host.
+- `zcsr_asset_pipeline`: game-agnostic offline asset pipeline. It parses
+  compiled reanim definitions, composes layers from recipe data, bakes GIF
+  sources into strips and packs strips into atlas pages. It is a tool module,
+  not a runtime renderer; the consuming game supplies recipes, paths and
+  manifest headers.
 
 Constraint: no `tower_defense`, `pvz`, `plant`, `zombie`, `sun` or other domain
 instance names in `common/`; no dependency on `tower_defense/`.
