@@ -1,5 +1,7 @@
 # zcsr_tools
 
+Version: 1.0.0. The `main` branch is the canonical history.
+
 `zcsr_tools` is a **developer tool layer**, not a product entry and not a
 window host. It contains reusable tool code and one domain pack. The runtime
 host owns the OS window and main loop; the editor workspace owns authoring UI.

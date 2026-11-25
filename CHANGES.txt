@@ -4,7 +4,7 @@ ZCSR Tools change notes
 history
 - keep one author line
 - keep source and technical docs
-- no release tag for now
+- version 1.0.0; main is the canonical history
 
 scope
 - common
