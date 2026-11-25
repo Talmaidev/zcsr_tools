@@ -70,6 +70,33 @@ zcsr_pathfinding_result zcsr_pathfinding_find_path(
     uint32_t out_path_capacity,
     uint32_t* out_path_length);
 
+/* 网格特化：四邻域、blocked 非零表示阻挡、cell_costs 可为 NULL（默认 1）。
+ * workspace 数组长度均为 width * height；open_heap_capacity 必须 >= 格子数。
+ * 本模块知道网格邻接，但不知道具体游戏的地图、单位或目标语义。 */
+typedef struct {
+    uint8_t* closed;
+    uint32_t* parent;
+    float* cost;
+    float* estimate;
+    uint32_t* open_heap;
+    uint32_t* open_position;
+    uint32_t open_heap_capacity;
+} zcsr_pathfinding_grid_workspace;
+
+zcsr_pathfinding_result zcsr_pathfinding_find_grid_path(
+    uint32_t width,
+    uint32_t height,
+    const uint8_t* blocked,
+    const float* cell_costs,
+    zcsr_pathfinding_grid_workspace* workspace,
+    uint32_t start_x,
+    uint32_t start_y,
+    uint32_t goal_x,
+    uint32_t goal_y,
+    uint32_t* out_path,
+    uint32_t out_path_capacity,
+    uint32_t* out_path_length);
+
 #ifdef __cplusplus
 }
 #endif

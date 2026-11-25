@@ -1,4 +1,59 @@
 cmake_minimum_required(VERSION 3.16)
+
+# --- Hard guard: the build tree must live OUTSIDE the source tree ------------
+# Same layout guard as zero-coupling-signal-router. CMake 3.16 compatible
+# (file(TO_CMAKE_PATH), no cmake_path): in-source / in-repo build directories
+# are refused at configure time so the source tree stays free of build output.
+if(CMAKE_BINARY_DIR)
+  file(TO_CMAKE_PATH "${CMAKE_SOURCE_DIR}" _zcsr_guard_src)
+  file(TO_CMAKE_PATH "${CMAKE_BINARY_DIR}" _zcsr_guard_bin)
+  if(WIN32)
+    string(TOLOWER "${_zcsr_guard_src}" _zcsr_guard_src_cmp)
+    string(TOLOWER "${_zcsr_guard_bin}" _zcsr_guard_bin_cmp)
+  else()
+    set(_zcsr_guard_src_cmp "${_zcsr_guard_src}")
+    set(_zcsr_guard_bin_cmp "${_zcsr_guard_bin}")
+  endif()
+  string(LENGTH "${_zcsr_guard_src_cmp}" _zcsr_guard_src_len)
+  string(SUBSTRING "${_zcsr_guard_bin_cmp}" 0 ${_zcsr_guard_src_len}
+         _zcsr_guard_bin_head)
+  set(_zcsr_guard_in_repo FALSE)
+  if(_zcsr_guard_bin_cmp STREQUAL _zcsr_guard_src_cmp)
+    set(_zcsr_guard_in_repo TRUE)
+  elseif(_zcsr_guard_bin_head STREQUAL _zcsr_guard_src_cmp)
+    string(SUBSTRING "${_zcsr_guard_bin_cmp}" ${_zcsr_guard_src_len} 1
+           _zcsr_guard_sep)
+    if(_zcsr_guard_sep STREQUAL "/" OR _zcsr_guard_sep STREQUAL "\\")
+      set(_zcsr_guard_in_repo TRUE)
+    endif()
+  endif()
+  if(_zcsr_guard_in_repo)
+    message(FATAL_ERROR
+      "In-repo build directory refused by ZCSR build-layout guard.\n"
+      "  CMAKE_SOURCE_DIR = ${CMAKE_SOURCE_DIR}\n"
+      "  CMAKE_BINARY_DIR = ${CMAKE_BINARY_DIR}\n"
+      "\n"
+      "Build trees must live outside the source tree: this repository (like\n"
+      "every repository under C:\\Users\\chen\\Documents\\GitHub) must stay clean.\n"
+      "Put the build tree at one of these instead:\n"
+      "  Windows: C:\\Users\\chen\\Documents\\build\\zcsr\\zcsr_tools\\<preset>\n"
+      "  Linux:   /home/chen/zcsr-builds/zcsr_tools/<preset>\n"
+      "\n"
+      "Example (Windows, Visual Studio generator):\n"
+      "  cmake -S . -B \"C:\\Users\\chen\\Documents\\build\\zcsr\\zcsr_tools\\build_main\" -G \"Visual Studio 18 2026\"\n"
+      "Example (Linux):\n"
+      "  cmake -S . -B /home/chen/zcsr-builds/zcsr_tools/linux-gcc\n")
+  endif()
+  unset(_zcsr_guard_src)
+  unset(_zcsr_guard_bin)
+  unset(_zcsr_guard_src_cmp)
+  unset(_zcsr_guard_bin_cmp)
+  unset(_zcsr_guard_src_len)
+  unset(_zcsr_guard_bin_head)
+  unset(_zcsr_guard_sep)
+  unset(_zcsr_guard_in_repo)
+endif()
+
 project(zcsr_tools VERSION 1.0.0 LANGUAGES C)
 
 include(GNUInstallDirs)
@@ -41,6 +96,7 @@ set(ZCSR_TOOL_TARGETS
   zcsr_debug_overlay
   zcsr_game_two_dimensional
   zcsr_pathfinding
+  zcsr_rng
   zcsr_flow_field
   zcsr_spatial_grid
   zcsr_profiler

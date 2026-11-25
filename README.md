@@ -20,8 +20,9 @@ not force another tool target.
 
 - `zcsr_game_two_dimensional`: 2D point, grid, board coordinate and caller-owned
   occupancy view.
-- `zcsr_pathfinding`: graph A*/Dijkstra path solving with caller-owned workspace
-  and output buffers.
+- `zcsr_pathfinding`: graph A*/Dijkstra path solving and grid-specialized A*
+  with caller-owned workspace and output buffers.
+- `zcsr_rng`: deterministic xorshift32 numbers with caller-owned state.
 - `zcsr_flow_field`: uniform-cost grid integration/flow field with caller-owned
   cost, distance, queue and direction storage.
 - `zcsr_spatial_grid`: uniform-grid broadphase for caller-owned AABBs, with
@@ -58,4 +59,8 @@ instance names in `common/`; no dependency on `tower_defense/`.
 - 新非塔防游戏：只链接需要的 `common` 工具，不引入塔防层。
 - PVZ：`pvz_input_map` 和 `pvz_sim` 直接调用 `zcsr_game_two_dimensional` 的网格坐标、占用、格子中心；lane 限制调用 `zcsr_tower_defense_lane_clamp`，波次调用 `zcsr_tower_defense_wave_schedule`。PVZ 不再保留自己的格子除法、占用检查、lane clamp 或 `next_wave < wave_count` 循环。
 
-`tests/check_layer_boundary.cmake` 会在 CTest 中检查目录边界，防止后续把实例逻辑塞回通用层；当前 tools CTest 11/11。`zcsr_bench` 只负责采样和 p50/p95/p99 报表，不是发布性能结论；跨引擎对比必须使用同一热机、同分辨率、同资产的单一控制变量表。
+`tests/check_layer_boundary.cmake` 会在 CTest 中检查目录边界，防止后续把实例逻辑塞回通用层；当前 tools CTest 13/13。`zcsr_bench` 只负责采样和 p50/p95/p99 报表，不是发布性能结论；跨引擎对比必须使用同一热机、同分辨率、同资产的单一控制变量表。
+
+## License
+
+本项目按 GNU Affero General Public License v3.0（AGPL-3.0）授权，完整许可证文本见仓库根目录 `LICENSE`。版权行：Copyright (C) 2026 Talmaidev。

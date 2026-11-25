@@ -1,6 +1,7 @@
 build_arch/
 build_final/
 build_layers/
+build_main/
 build/
 out/
 *.obj

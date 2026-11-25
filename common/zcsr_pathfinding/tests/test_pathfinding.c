@@ -3,6 +3,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 #define TEST_NODE_COUNT 16u
 #define TEST_EDGE_CAPACITY 64u
@@ -96,6 +97,74 @@ static int path_is_connected(const test_graph* graph, const uint32_t* path,
     return 1;
 }
 
+static int test_grid_path(void)
+{
+    enum { WIDTH = 32, HEIGHT = 32, CELLS = WIDTH * HEIGHT };
+    uint8_t blocked[CELLS];
+    uint8_t closed[CELLS];
+    uint32_t parent[CELLS];
+    float cost[CELLS];
+    float estimate[CELLS];
+    uint32_t open_heap[CELLS];
+    uint32_t open_position[CELLS];
+    uint32_t path[CELLS];
+    uint32_t path_length = 0u;
+    zcsr_pathfinding_grid_workspace workspace;
+    zcsr_pathfinding_result result;
+    int fails = 0;
+    uint32_t index;
+
+    memset(blocked, 0, sizeof(blocked));
+    workspace.closed = closed;
+    workspace.parent = parent;
+    workspace.cost = cost;
+    workspace.estimate = estimate;
+    workspace.open_heap = open_heap;
+    workspace.open_position = open_position;
+    workspace.open_heap_capacity = CELLS;
+
+    result = zcsr_pathfinding_find_grid_path(
+        WIDTH, HEIGHT, blocked, NULL, &workspace,
+        0u, 0u, WIDTH - 1u, HEIGHT - 1u, path, CELLS, &path_length);
+    fails += expect(result == ZCSR_PATHFINDING_RESULT_FOUND, "grid path found");
+    fails += expect(path_length == 63u, "grid path shortest length");
+    fails += expect(path[0] == 0u && path[path_length - 1u] == CELLS - 1u,
+                    "grid path endpoints");
+
+    result = zcsr_pathfinding_find_grid_path(
+        WIDTH, HEIGHT, blocked, NULL, &workspace,
+        0u, 0u, WIDTH - 1u, HEIGHT - 1u, path, 1u, &path_length);
+    fails += expect(result == ZCSR_PATHFINDING_RESULT_OUTPUT_TOO_SMALL,
+                    "grid small output rejected");
+    fails += expect(path_length == 63u, "grid small output keeps length");
+
+    result = zcsr_pathfinding_find_grid_path(
+        WIDTH, HEIGHT, blocked, NULL, &workspace,
+        5u, 5u, 5u, 5u, path, CELLS, &path_length);
+    fails += expect(result == ZCSR_PATHFINDING_RESULT_FOUND, "grid same cell");
+    fails += expect(path_length == 1u && path[0] == 5u * WIDTH + 5u,
+                    "grid same cell path");
+
+    for (index = 0; index < WIDTH; ++index) {
+        blocked[10u * WIDTH + index] = 1u;
+    }
+    result = zcsr_pathfinding_find_grid_path(
+        WIDTH, HEIGHT, blocked, NULL, &workspace,
+        0u, 0u, WIDTH - 1u, HEIGHT - 1u, path, CELLS, &path_length);
+    fails += expect(result == ZCSR_PATHFINDING_RESULT_NO_PATH,
+                    "grid blocked row no path");
+    fails += expect(path_length == 0u, "grid no path length");
+
+    blocked[0] = 1u;
+    result = zcsr_pathfinding_find_grid_path(
+        WIDTH, HEIGHT, blocked, NULL, &workspace,
+        0u, 0u, WIDTH - 1u, HEIGHT - 1u, path, CELLS, &path_length);
+    fails += expect(result == ZCSR_PATHFINDING_RESULT_NO_PATH,
+                    "grid blocked start no path");
+
+    return fails;
+}
+
 int main(void) {
     test_graph graph;
     zcsr_pathfinding_graph graph_view;
@@ -170,6 +239,8 @@ int main(void) {
         path, TEST_NODE_COUNT, &path_length);
     fails += expect(result == ZCSR_PATHFINDING_RESULT_INVALID_ARGUMENT,
                     "small workspace rejected");
+
+    fails += test_grid_path();
 
     if (fails == 0) printf("test_pathfinding: PASS\n");
     return fails ? 1 : 0;

@@ -17,3 +17,11 @@ endif()
 add_executable(test_overlay tests/test_overlay.c)
 target_link_libraries(test_overlay PRIVATE zcsr_debug_overlay)
 add_test(NAME overlay COMMAND test_overlay)
+
+add_executable(test_overlay_integration tests/test_integration.c)
+target_link_libraries(test_overlay_integration PRIVATE
+    zcsr_debug_overlay
+    zcsr_core
+    zcsr_hsm
+    zcsr_signal)
+add_test(NAME overlay_integration COMMAND test_overlay_integration)
